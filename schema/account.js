@@ -1,58 +1,58 @@
-const  mongoose  = require('mongoose')
+const mongoose = require('mongoose')
 
 const userSchema = mongoose.Schema({
-    accID : {
+    accID: {
         type: String,
-       
+
     },
-    accFname : {
+    accFname: {
         type: String,
-       
+
     },
-    accLname : {
+    accLname: {
         type: String,
-      
+
     },
-    accSuffix : {
+    accSuffix: {
         type: String,
-      
+
     },
-    accAddress : {
+    accAddress: {
         type: String,
-      
+
     },
-    accEmailAddress : {
+    accEmailAddress: {
         type: String,
-      
+
     },
-    accessType : {
+    accessType: {
         type: String,
-      
+
     },
-    accInstitution : {
+    accInstitution: {
         type: String,
-      
+
     },
-    accFollowers : {
+    accFollowers: {
         type: Array,
-      
+
     },
-    accPoints : {
+    accPoints: {
         type: String,
-      
+
     },
-    password : {
+    password: {
+        type: String,   
+
+    },
+    username: {
         type: String,
-        
+
     },
-    username : {
-        type: String,
-       
-    },
-    accBday:{
+    accBday: {
         type: String
     },
-    accContact : {
+    accContact: {
         type: String
     },
     accCategories: {
@@ -64,16 +64,22 @@ const userSchema = mongoose.Schema({
     password: {
         type: String
     },
-    artistDescription : {
-        type : String
+    artistDescription: {
+        type: String
     },
-    accImg : {
-        type : String
+    accImg: {
+        type: String
     },
     dateAdded: {
-        type : String
+        type: String
+    },
+    acc_Status : {
+        type: String
+    },
+    acc_Documents : {
+        type: String
     }
 })
 
 
-module.exports = User = mongoose.model('userSchema' , userSchema);
+module.exports = User = mongoose.model('userSchema', userSchema);

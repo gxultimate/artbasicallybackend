@@ -1,3 +1,5 @@
+const { filter } = require('lodash');
+
 let express = require('express'),
 	mongoose = require('mongoose'),
 	uuidv4 = require('uuid/v4'),
@@ -43,7 +45,8 @@ router.post('/addArtwork', (req, res) => {
 		artType: request.artType,
 		artCategory: request.artCategory,
 		dateAdded: moment().format('MM/DD/YYYY'),
-		artworkImg: request.artworkImg
+		artworkImg: request.artworkImg,
+		artworkStatus: 'Pending'
 	});
 	artwork
 		.save()
@@ -75,7 +78,10 @@ function removeUndefinedProps(obj) {
 router.post('/editArtwork', function(req, res) {
 	const request = removeUndefinedProps(req.body.data);
 
-	Artwork.findByIdAndUpdate({ _id: request._id }, request, { new: true }, function(err, place) {
+	Artwork.findByIdAndUpdate({ _id: request._id }, request, { new: true, useFindAndModify: true }, function(
+		err,
+		place
+	) {
 		if (err) {
 			return res.status(500).send({ error: 'unsuccessful' });
 		}
@@ -111,11 +117,11 @@ router.get('/getSingleArtworkInfo/:id', (req, res) => {
 	if (artworks.length !== 0) {
 		res.json(artworks);
 	} else {
-		Artwork.find({ artworkID: id }, (err, docs) => {
+		Artwork.findOne({ artworkID: id }, (err, docs) => {
 			if (err) res.send(err);
 			db.getCollection('artworks').insert(docs);
 			db.saveDatabase(docs);
-		
+
 			res.json(docs);
 		});
 	}
@@ -174,38 +180,79 @@ router.post('/getCustomerArtwork', (req, res) => {
 	}
 });
 
-router.get('/getEmergingArtistArtwork', (req, res) => {
+router.get('/getEmergingArtistArtwork', async (req, res) => {
 	let artworkList = [];
-	let artist = Artist.find({ accessType: 'Artist' }, (err, docs) => {
+	let artist = await Artist.find({ accessType: 'Artist' }, (err, docs) => {
 		docs.map((doc) => {
 			artworkList.push(`${doc.accFname} ${doc.accLname}`);
 		});
 	});
 
-	if (db.getCollection('artworks').find({}).length !== 0) {
-		let artistArtwork = db.getCollection('artworks').find({}).filter((art) => {
+	await Artwork.find({}, (err, docs) => {
+		if (err) res.send(err);
+		docs.filter((art) => {
 			artworkList.reverse().map((artist) => {
-				console.log('two');
 				if (art.artistName === artist) {
 					return art;
 				}
 			});
 		});
-		let arr = _.uniqBy(artistArtwork, (a) => a.artistName);
-		res.json(arr);
+		res.json(_.uniqBy(docs, (a) => a.artistName));
+	});
+});
+
+router.get('/getArtistFollowArtwork/:email', async (req, res) => {
+	let email = req.params.email;
+	let artworkList = [];
+	Artist.find({}, (err, docs) => {
+		docs.map((doc) => {
+			if (doc.accFollowers.includes(email)) {
+				artworkList.push(`${doc.accFname} ${doc.accLname}`);
+			}
+		});
+	});
+
+	await Artwork.find({}, (err, docs) => {
+		if (err) res.send(err);
+		docs.filter((art) => {
+			if (artworkList.includes(art.artistName)) {
+				return art;
+			}
+		});
+
+		res.json(_.uniqBy(docs, (a) => a.artistName));
+	});
+});
+
+router.get('/getRelatedWorkByCategory/:category', async (req, res) => {
+	let category = JSON.parse(req.params.category);
+
+	if (db.getCollection('artworks').find({}).length !== 0) {
+		let filteredArt = [];
+
+		let artistArtwork = db.getCollection('artworks').find({}).map((art) => {
+			category.map((cat, index) => {
+				if (art.artTheme.includes(cat) || art.artStyle.includes(cat)) {
+					filteredArt.push(art);
+				}
+			});
+		});
+
+		res.json(_.uniqBy(filteredArt, (a) => a.artName));
 	} else {
+		let filteredArt = [];
 		Artwork.find({}, (err, docs) => {
 			if (err) res.send(err);
 			docs.map((art) => {
-				artworkList.reverse().map((artist) => {
-					if (art.artistName === artist) {
-						return art;
+				category.map((cat, index) => {
+					if (art.artTheme.includes(cat) || art.artStyle.includes(cat)) {
+						filteredArt.push(art);
 					}
 				});
 			});
-			let arr = _.uniqBy(docs, (a) => a.artistName);
-			res.json(arr);
 		});
+		console.log(filteredArt, 'arts2');
+		res.json(_.uniqBy(filteredArt, (a) => a.artName));
 	}
 });
 

@@ -7,12 +7,17 @@ var uuidv4 = require('uuid');
 
 router.post('/getOrders', function(req, res) {
 	const request = req.body.data;
-	console.log(request, 'awstss');
 	const order = Order.find({ accID: request.accID }, function(err, docs) {
 		res.json(docs);
 	});
 });
 
+router.get('/getOrder/:id', function(req, res) {
+	const id = req.params.id;
+	const order = Order.find({ accID: id }, function(err, docs) {
+		res.json(docs);
+	});
+});
 router.get('/getAllOrders', function(req, res) {
 	const request = req.body.data;
 	const order = Order.find({}, function(err, docs) {
@@ -80,24 +85,19 @@ router.put('/editOrder', (req, res) => {
 	);
 });
 
-
 router.put('/editOrder/:id', (req, res) => {
 	const request = req.body.data;
 	const id = req.params.id;
 
-	Order.findByIdAndUpdate(
-		{ _id: id },
-		{ useFindAndModify: false },
-		(err, place) => {
-			if (err) return res.send(err);
+	Order.findByIdAndUpdate({ _id: id }, { useFindAndModify: false }, (err, place) => {
+		if (err) return res.send(err);
 
-			setTimeout(() => {
-				Order.find({ accID: request.account }, function(err, docs) {
-					res.json(docs);
-				});
-			}, 1200);
-		}
-	);
+		setTimeout(() => {
+			Order.find({ accID: request.account }, function(err, docs) {
+				res.json(docs);
+			});
+		}, 1200);
+	});
 });
 
 router.post('/editToCart', function(req, res) {

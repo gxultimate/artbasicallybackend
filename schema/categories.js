@@ -1,16 +1,12 @@
-const  mongoose  = require('mongoose')
+const mongoose = require('mongoose');
 
 const categorySchema = mongoose.Schema({
-    catID : {
-        type: String,
-       
-    },
-    catType : {
-        type: String,
-       
-    },
+	catID: {
+		type: String
+	},
+	catType: {
+		type: String
+	}
+});
 
-})
-
-
-module.exports = User = mongoose.model('categorySchema' , categorySchema);
+module.exports = User = mongoose.model('categorySchema', categorySchema);

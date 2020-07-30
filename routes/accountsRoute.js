@@ -21,71 +21,60 @@ let hashPassword = (password) => {
 };
 
 router.get('/getAccounts', function(req, res) {
-	if (accounts.find({}).length !== 0) {
-		res.json(accounts.find({}));
-	} else {
-		const account = Accounts.find({}, function(err, docs) {
-			docs.map((acc) => {
-				if (acc.accessType.toLowerCase() === 'artist') {
-					accounts.insert(acc);
-					db.saveDatabase(acc);
-				} else {
-					accounts.insert(acc);
-					db.saveDatabase(acc);
-				}
-			});
-			res.json(docs);
-		});
-	}
+	const account = Accounts.find({}, function(err, docs) {
+		res.json(docs);
+	});
 });
 
 router.post('/addAccounts', async (req, res) => {
 	const request = req.body.data;
-	let data = 0;
+	let data = [];
 	var salt = bcrypt.genSaltSync(10);
 	var hash = bcrypt.hashSync(request.password, salt);
 
-	const accounts =  Accounts.findOne({ accEmailAddress: request.accEmailAddress }).exec();
-	console.log(accounts ,"acc")
-	if (accounts.length !== 0) {
-		res.send(false);
-	} else {
-		const account = new Accounts({
-			accFname: request.accFname,
-			accLname: request.accLname,
-			accAddress: request.accAddress,
-			accEmailAddress: request.accEmailAddress,
-			accSuffix: request.accSuffix,
-			accContact: request.accContact,
-			accReg: request.accReg,
-			username: request.Username,
-			accID: request.accID,
-			accessType: request.accessType,
-			accInstitution: request.accInstitution,
-			accCategories: request.accCategories,
-			accStyles: request.accStyles,
-			accFollowers: request.accFollowers,
-			accPoints: request.accPoints,
-			accStatus: request.accStatus,
-			password: hash,
-			accBday: request.accBday,
-			artistDescription: request.artistDescription,
-			accImg: request.accImg,
-			dateAdded: moment().format('MM/DD/YYYY')
-		});
-		await account
-			.save()
-			.then((result) => {
-				setTimeout(() => {
-					const account = Accounts.find({}, function(err, doc) {
-						res.json(doc);
-					});
-				}, 1200);
-			})
-			.catch((err) => {
-				console.log(err);
+	const accounts = await Accounts.findOne({ accEmailAddress: request.accEmailAddress }, (err, docs) => {
+		if (docs.length !== 0) {
+			res.send(false);
+		} else {
+			const account = new Accounts({
+				accFname: request.accFname,
+				accLname: request.accLname,
+				accAddress: request.accAddress,
+				accEmailAddress: request.accEmailAddress,
+				accSuffix: request.accSuffix,
+				accContact: request.accContact,
+				accReg: request.accReg,
+				username: request.Username,
+				accID: request.accID,
+				accessType: request.accessType,
+				accInstitution: request.accInstitution,
+				accCategories: request.accCategories,
+				acc_Documents: request.acc_Documents,
+				accStyles: request.accStyles,
+				accFollowers: request.accFollowers,
+				accPoints: request.accPoints,
+				accStatus: request.accStatus,
+				password: hash,
+				accBday: request.accBday,
+				artistDescription: request.artistDescription,
+				accImg: request.accImg,
+				acc_Status: 'pending',
+				dateAdded: moment().format('MM/DD/YYYY')
 			});
-	}
+			account
+				.save()
+				.then((result) => {
+					setTimeout(() => {
+						const account = Accounts.find({}, function(err, doc) {
+							res.json(doc);
+						});
+					}, 1200);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}
+	});
 });
 
 function removeUndefinedProps(obj) {
@@ -96,17 +85,37 @@ function removeUndefinedProps(obj) {
 	}
 	return obj;
 }
+function removeEmptyProps(obj) {
+	for (var prop in obj) {
+		if (obj.hasOwnProperty(prop) && obj[prop].length === 0) {
+			delete obj[prop];
+		} else if (obj.hasOwnProperty(prop) && obj[prop] === '0') {
+			delete obj[prop];
+		}
+	}
+	return obj;
+}
 
 router.post('/editAccount', function(req, res) {
 	const request = req.body.data;
-	let filteredRequest = removeUndefinedProps(request);
 
-	Accounts.findByIdAndUpdate({ _id: request._id }, filteredRequest, { new: true }, function(err, place) {
+	let filteredRequest = removeEmptyProps(removeUndefinedProps(request));
+
+	Accounts.findByIdAndUpdate({ _id: filteredRequest._id }, filteredRequest, { useFindAndModify: false }, function(
+		err,
+		place
+	) {
 		if (err) {
 			return res.status(500).send({ error: 'unsuccessful' });
 		}
 		setTimeout(() => {
 			const accounts = Accounts.find({}, function(err, docs) {
+				docs.map((doc) => {
+					if (doc._id === filteredRequest._id) {
+						console.log(doc, 'doc');
+					}
+				});
+
 				res.json(docs);
 			});
 		}, 1200);
@@ -128,7 +137,7 @@ router.post('/followAccount/:id', async (req, res) => {
 	let name = request.accEmailAddress;
 
 	let followers = [];
-	const accounts = await Accounts.findById({ _id: id });
+	const accounts = await Accounts.findById({ _id: id }, { useFindAndModify: false });
 	let account = accounts.accFollowers.map((acc) => {
 		if (acc !== '' && acc !== null) {
 			followers.push(acc);
@@ -144,8 +153,6 @@ router.post('/followAccount/:id', async (req, res) => {
 	} else {
 		followers.push(name);
 	}
-
-	console.log(followers, 'aws');
 
 	const acc = Accounts.findByIdAndUpdate({ _id: id }, { accFollowers: removeNull(followers) }, function(err, result) {
 		if (err || result !== undefined) {
@@ -164,23 +171,26 @@ router.post('/followAccount/:id', async (req, res) => {
 	});
 });
 
-router.post('/loginAccounts', function(req, res) {
+router.post('/loginAccounts', async function(req, res) {
 	let request = req.body.data;
+	try {
+		const user = await Accounts.findOne({ accEmailAddress: request.accEmailAddress });
+		const isMatch = bcrypt.compareSync(request.password, user.password);
 
-	let accountList = Accounts.findOne({ accEmailAddress: request.accEmailAddress }).exec((err, docs) => {
-		if (err || docs === null) res.send(false);
-		else if (bcrypt.compareSync(request.password, docs.password)) {
-			res.json(docs);
-		} else if (request.password === docs.password) {
-			res.json(docs);
-		} else {
+		if (user.password === request.password) {
+			res.json(user);
+		} else if (!isMatch) {
 			res.send(false);
+		} else {
+			res.json(user);
 		}
-	});
+	} catch (e) {
+		res.send(false);
+	}
 });
 
 router.get('/getArtists', (req, res) => {
-	const artist = Accounts.find({}, function(err, docs) {
+	const artist = Accounts.find({}, { useFindAndModify: false }, function(err, docs) {
 		let accList = docs.filter((acc) => {
 			if (acc.accessType === 'Artist') {
 				artists.insert(acc);

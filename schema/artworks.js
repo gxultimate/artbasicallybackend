@@ -55,6 +55,9 @@ const artworksSchema = mongoose.Schema({
     },
     dateAdded: {
         type : String
+    },
+    artworkStatus : {
+        type : String
     }
 })
 

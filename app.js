@@ -27,7 +27,7 @@ var helmet = require('helmet')
 const storage = cloudinaryStorage({
   cloudinary: cloudinary,
   folder: "artwork",
-  allowedFormats: ["jpg", "png"],
+  allowedFormats: ["jpg", "png", "jpeg"],
   transformation: [{quality: 'auto' }]
   });
   const parser = multer({ storage: storage });
