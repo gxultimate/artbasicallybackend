@@ -4,11 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "set NODE_ENV=dev && concurrently --kill-others \"npm run server\" \"npm run assets\"",
-    "server": "nodemon ./app.js --ignore db.json",
-    "assets": "cd public/ && npm start",
-    "sample": "node ./helpers/ImportAndClearMongoDb.js",
-    "blowitallaway": "node ./helpers/ImportAndClearMongoDb.js --delete",
+  "server": "nodemon ./app.js --ignore db.json",
     "start": "pm2 start ecosystem.config.json --no-daemon"
   },
   "keywords": [],

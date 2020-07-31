@@ -93,131 +93,58 @@ router.post('/editArtwork', function(req, res) {
 	});
 });
 
-router.get('/getArtworkInfo', (req, res) => {
-	let artworks = db.getCollection('artworks');
-
-	if (artworks.find({}).length >= 3) {
-		res.json(artworks.find({}));
-	} else {
-		Artwork.find({}, (err, docs) => {
-			if (err) res.send(err);
-			docs.map((art) => {
-				db.getCollection('artworks').insert(art);
-				db.saveDatabase(art);
-			});
-			res.json(docs);
-		});
-	}
+router.get('/getArtworkInfo', async (req, res) => {
+	let artworks = await Artwork.find({});
+	res.json(artworks);
 });
 
-router.get('/getSingleArtworkInfo/:id', (req, res) => {
+router.get('/getSingleArtworkInfo/:id', async (req, res) => {
+	let id = req.params.id;
+	let resp = await Artwork.findOne({ artworkID: id });
+	res.json(resp);
+});
+
+router.get('/getArtistArtwork/:id', async (req, res) => {
 	let id = req.params.id;
 
-	let artworks = db.getCollection('artworks').find({ artworkID: id });
-	if (artworks.length !== 0) {
-		res.json(artworks);
-	} else {
-		Artwork.findOne({ artworkID: id }, (err, docs) => {
-			if (err) res.send(err);
-			db.getCollection('artworks').insert(docs);
-			db.saveDatabase(docs);
-
-			res.json(docs);
-		});
-	}
+	let artistartwork = await Artwork.find({ artistName: id });
+	res.json(artistartwork);
 });
 
-router.get('/getArtistArtwork/:id', (req, res) => {
-	let id = req.params.id;
-	let artworkList = [];
-
-	if (db.getCollection('artworks').find({}).length !== 0) {
-		let artistArtwork = db.getCollection('artworks').find({ artistName: id });
-		res.json(artistArtwork);
-	} else {
-		Artwork.find({ artistName: id }, (err, docs) => {
-			if (err) res.send(err);
-
-			docs.map((art) => {
-				if (art.artistName === id) {
-					db.getCollection('artworks').insert(art);
-					db.saveDatabase(art);
-					return art;
-				}
-			});
-			res.json(docs);
-		});
-	}
-});
-
-router.post('/getCustomerArtwork', (req, res) => {
+router.post('/getCustomerArtwork', async (req, res) => {
 	let categories = req.body.data;
-	let artworkList = [];
 
-	if (db.getCollection('artworks').find({}).length !== 0) {
-		let artistArtwork = db.getCollection('artworks').find({}).filter((art) => {
+	await Artwork.find({}, (err, docs) => {
+		if (err) res.send(err);
+
+		docs.map((art) => {
 			categories.map((cat) => {
 				if (art.artCategory.includes(cat)) {
 					return art;
 				}
 			});
 		});
-
-		res.json(artistArtwork);
-	} else {
-		Artwork.find({}, (err, docs) => {
-			if (err) res.send(err);
-
-			docs.map((art) => {
-				categories.map((cat) => {
-					if (art.artCategory.includes(cat)) {
-						return art;
-					}
-				});
-			});
-			res.json(docs);
-		});
-	}
+		res.json(docs);
+	});
 });
 
 router.get('/getEmergingArtistArtwork', async (req, res) => {
-	let artworkList = [];
-	let artist = await Artist.find({ accessType: 'Artist' }, (err, docs) => {
-		docs.map((doc) => {
-			artworkList.push(`${doc.accFname} ${doc.accLname}`);
-		});
-	});
-
-	await Artwork.find({}, (err, docs) => {
-		if (err) res.send(err);
-		docs.filter((art) => {
-			artworkList.reverse().map((artist) => {
-				if (art.artistName === artist) {
-					return art;
-				}
-			});
-		});
-		res.json(_.uniqBy(docs, (a) => a.artistName));
-	});
+	let docs = await (await Artwork.find({})).reverse();
+	res.json(_.uniqBy(docs, (a) => a.artistName));
 });
 
 router.get('/getArtistFollowArtwork/:email', async (req, res) => {
 	let email = req.params.email;
-	let artworkList = [];
-	Artist.find({}, (err, docs) => {
-		docs.map((doc) => {
-			if (doc.accFollowers.includes(email)) {
-				artworkList.push(`${doc.accFname} ${doc.accLname}`);
-			}
-		});
-	});
+	let artworkList2 =  Artist.find({ accessType: 'Artist', accFollowers: { $in: [ email ] } });
 
 	await Artwork.find({}, (err, docs) => {
 		if (err) res.send(err);
 		docs.filter((art) => {
-			if (artworkList.includes(art.artistName)) {
-				return art;
-			}
+			artworkList2.map((artist) => {
+				if (`${artist.accFname} ${artist.accLname}` === art.artistName) {
+					return art;
+				}
+			});
 		});
 
 		res.json(_.uniqBy(docs, (a) => a.artistName));
@@ -226,34 +153,10 @@ router.get('/getArtistFollowArtwork/:email', async (req, res) => {
 
 router.get('/getRelatedWorkByCategory/:category', async (req, res) => {
 	let category = JSON.parse(req.params.category);
-
-	if (db.getCollection('artworks').find({}).length !== 0) {
-		let filteredArt = [];
-
-		let artistArtwork = db.getCollection('artworks').find({}).map((art) => {
-			category.map((cat, index) => {
-				if (art.artTheme.includes(cat) || art.artStyle.includes(cat)) {
-					filteredArt.push(art);
-				}
-			});
-		});
-
-		res.json(_.uniqBy(filteredArt, (a) => a.artName));
-	} else {
-		let filteredArt = [];
-		Artwork.find({}, (err, docs) => {
-			if (err) res.send(err);
-			docs.map((art) => {
-				category.map((cat, index) => {
-					if (art.artTheme.includes(cat) || art.artStyle.includes(cat)) {
-						filteredArt.push(art);
-					}
-				});
-			});
-		});
-		console.log(filteredArt, 'arts2');
-		res.json(_.uniqBy(filteredArt, (a) => a.artName));
-	}
+	let filteredArt = [];
+	await Artwork.find({ artTheme: { $in: category.artTheme }, artStyle: { $in: category.artStyle } }, (err, docs) => {
+		res.json(docs);
+	});
 });
 
 module.exports = router;
