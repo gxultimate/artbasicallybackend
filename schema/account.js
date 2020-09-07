@@ -42,14 +42,14 @@ const userSchema = mongoose.Schema({
 
     },
     password: {
-        type: String,   
+        type: String,
 
     },
     username: {
         type: String,
 
     },
-    accBday: {
+    birthYear: {
         type: String
     },
     accContact: {
@@ -67,7 +67,7 @@ const userSchema = mongoose.Schema({
     artistDescription: {
         type: String
     },
-    accImg: {
+    profile_Img: {
         type: String
     },
     dateAdded: {
