@@ -184,7 +184,7 @@ router.post('/loginAccounts', async function(req, res) {
 	}
 });
 
-router.post('/loginFBAccounts', async function(req, res) {
+router.post('/loginEmail', async function(req, res) {
 	let request = req.body.data;
 	try {
 		const user = await Accounts.findOne({ accFname: request.accFname });

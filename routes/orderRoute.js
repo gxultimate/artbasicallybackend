@@ -86,7 +86,7 @@ router.put('/editOrder', (req, res) => {
 			}, 1200);
 		}
 	);
-});
+})
 
 
 router.put('/editOrder/:id', (req, res) => {
