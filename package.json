@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+  
   "scripts": {
-  "server": "nodemon ./app.js --ignore db.json",
+    "dev": "set NODE_ENV=dev && concurrently --kill-others \"npm run server\" \"npm run assets\"",
+    "server": "nodemon ./app.js --ignore db.json",
+    "assets": "cd public/ && npm start",
+    "sample": "node ./helpers/ImportAndClearMongoDb.js",
+    "blowitallaway": "node ./helpers/ImportAndClearMongoDb.js --delete",
     "start": "pm2 start ecosystem.config.json --no-daemon"
   },
   "keywords": [],
@@ -36,7 +41,8 @@
     "morgan": "^1.9.1",
     "multer": "^1.4.2",
     "multer-storage-cloudinary": "^2.2.1",
-    "pm2": "^4.4.0",
+    "ngrok": "^3.2.7",
+    "pm2": "^4.2.3",
     "uuid": "^3.3.2",
     "uuidv4": "^6.0.6"
   },
