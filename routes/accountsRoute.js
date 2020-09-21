@@ -9,6 +9,7 @@ var Schema = mongoose.schema;
 var lokijs = require('lokijs');
 var db = new lokijs('Account');
 
+
 var artists = db.addCollection('artists', { indices: [ 'accID' ] });
 var accounts = db.addCollection('accounts', { indices: [ 'accID' ] });
 
@@ -116,6 +117,19 @@ router.post('/editAccount', function(req, res) {
 		}
 	);
 });
+router.put('/editProfile/:id', function (req, res) {
+	console.log(req.body.data,'aaa')
+		const request = func.removeUndefinedProps((req.body.data));
+		let id = req.params.id;
+		Accounts.findByIdAndUpdate({ _id: id }, request, { useFindAndModify: false }, (err, place) => {
+			if (err) return res.send(err);
+			const account = Accounts.find({}, (err, docs) => {
+				setTimeout(() => {
+					res.json(docs);
+				}, 1200);
+			});
+		});
+	});
 
 function removeNull(item) {
 	let items = item.filter((arr) => {
@@ -185,12 +199,18 @@ router.post('/loginAccounts', async function(req, res) {
 });
 
 router.post('/loginEmail', async function(req, res) {
+
+	
+
 	let request = req.body.data;
+	
 	try {
+		// response.cookie('mediaData', req.body.data, { SameSite: 'None', Secure: true });
 		const user = await Accounts.findOne({ accFname: request.accFname });
 		const isMatch = bcrypt.compareSync(request.accEmailAddress, user.accEmailAddress);
 
 		if (user.accEmailAddress === request.accEmailAddress) {
+			
 			res.json(user);
 		} else if (!isMatch) {
 			res.send(false);
@@ -236,5 +256,45 @@ router.get('/getSingleArtists/:id', (req, res) => {
 		});
 	}
 });
+
+
+router.post('/loginFB', async function(req, res) {
+	let request = req.body.data;
+	console.log(request,'dfsgsdfgs')
+	try {
+		const user = await Accounts.findOne({ accEmailAddress: request.accEmailAddress });
+		
+	
+
+		if (user.accEmailAddress === request.accEmailAddress) {
+			res.json(user);
+		} else if (!isMatch) {
+			res.send(false);
+		} else {
+			res.json(user);
+		}
+	} catch (e) {
+		res.send(false);
+	}
+});
+
+router.post('/loginGoogle', async function(req, res) {
+	let request = req.body.data;
+	try {
+		const user = await Accounts.findOne({ accEmailAddress: request.accEmailAddress });
+	
+
+		if (user.accEmailAddress === request.accEmailAddress) {
+			res.json(user);
+		} else if (!isMatch) {
+			res.send(false);
+		} else {
+			res.json(user);
+		}
+	} catch (e) {
+		res.send(false);
+	}
+});
+
 
 module.exports = router;
