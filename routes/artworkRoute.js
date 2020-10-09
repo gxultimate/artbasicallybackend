@@ -22,7 +22,7 @@ cloudinary.config({
 	cloud_name: 'startupprojectph',
 	api_key: '791841236177612',
 	api_secret: 'J_CxEeWYjcFLQnY55N4pa9LW6lA',
-	secure:true,
+
 });
 
 const DIR = './public/';

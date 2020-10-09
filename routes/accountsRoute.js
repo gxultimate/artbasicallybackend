@@ -33,10 +33,11 @@ router.post('/addAccounts', async (req, res) => {
 	var salt = bcrypt.genSaltSync(10);
 	var hash = bcrypt.hashSync(request.password, salt);
 
-	// const accounts = await Accounts.findOne({ accEmailAddress: request.accEmailAddress }, (err, docs) => {
-	// 	if (docs.length !== 0) {
-	// 		res.send(false);
-	// 	} else {
+	const accounts = await Accounts.findOne({ accID: request.accID }, (err, docs) => {
+	
+		if (docs !== null ) {
+			res.send(false);
+		} else {
 			const account = new Accounts({
 				accID: request.accID,
 				accFname: request.accFname,
@@ -61,6 +62,7 @@ router.post('/addAccounts', async (req, res) => {
 				profile_Img: request.profile_Img,
 				acc_Status: request.acc_Status,
 				dateAdded: request.dateAdded,
+				regType: request.regType,
 			});
 			account
 				.save()
@@ -77,8 +79,8 @@ router.post('/addAccounts', async (req, res) => {
 					res.json({ status: false });
 					console.log(err,'errorSignUp');
 				});
-	// 	}
-	// });
+		}
+	});
 });
 
 function removeUndefinedProps(obj) {

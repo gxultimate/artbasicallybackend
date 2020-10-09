@@ -78,6 +78,9 @@ const userSchema = mongoose.Schema({
     },
     acc_Documents : {
         type: String
+    },
+    regType : {
+        type: String
     }
 })
 
