@@ -38,6 +38,7 @@ router.post('/addOrder', (req, res) => {
 		orderStatus: request.orderStatus,
 		paymentStatus: request.paymentStatus,
 		totalAmount: request.totalAmount,
+		partnerEarnings: request.partnerEarnings,
 		accID: request.accID
 	});
 	order

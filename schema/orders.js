@@ -31,6 +31,9 @@ const ordersSchema = mongoose.Schema({
     },
     totalAmount:{
         type:Number,
+    },
+    partnerEarnings:{
+        type:Number,
     }
 })
 
