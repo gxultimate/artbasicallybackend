@@ -286,4 +286,26 @@ router.get('/getRelatedWorkByCategory/:category', (req, res) => {
 	}
 });
 
+
+router.get('/getAllArtworks', (req, res) => {
+    const art = Artwork.find({} , function(err, docs) {
+        res.json(docs)
+    })
+	// let artworks = db.getCollection('artworks');
+
+	// if (artworks.find({}).length >= 3) {
+	// 	res.json(artworks.find({}));
+	// } else {
+	// 	Artwork.find({}, (err, docs) => {
+	// 		if (err) res.send(err);
+	// 		docs.map((art) => {
+	// 			db.getCollection('artworks').insert(art);
+	// 			db.saveDatabase(art);
+	// 		});
+	// 		res.json(docs);
+		
+	// 	});
+	// }
+})
+
 module.exports = router;
