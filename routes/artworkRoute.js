@@ -47,7 +47,7 @@ router.post('/addArtwork', (req, res) => {
 		artCategory: request.artCategory,
 		dateAdded: moment().format('MM/DD/YYYY'),
 		artworkImg: request.artworkImg,
-		artworkStatus: 'Pending'
+		artworkStatus: request.artworkStatus,
 	});
 	artwork
 		.save()
@@ -267,7 +267,7 @@ router.get('/getRelatedWorkByCategory/:category', (req, res) => {
 				}
 			});
 		});
-		console.log(filteredArt,"arts1")
+
 		res.json(_.uniqBy(filteredArt, (a) => a.artName));
 	} else {
 		let filteredArt = [];
@@ -281,7 +281,7 @@ router.get('/getRelatedWorkByCategory/:category', (req, res) => {
 				});
 			});
 		});
-		console.log(filteredArt,"arts2")
+		
 		res.json(_.uniqBy(filteredArt, (a) => a.artName));
 	}
 });
@@ -306,6 +306,9 @@ router.get('/getAllArtworks', (req, res) => {
 		
 	// 	});
 	// }
+
+
+
 })
 
 module.exports = router;
