@@ -125,6 +125,21 @@ router.get('/getSingleArtworkInfo/:id', (req, res) => {
 	}
 });
 
+router.get('/getLatest', (req, res) => {
+	const artist = Accounts.find({},{useFindAndModify:false}, function(err, docs) {
+		let accList = docs.filter((acc) => {
+			if (acc.accessType === 'Artist' && acc.acc_Status === 'Active') {
+				artists.insert(acc);
+				db.saveDatabase(acc);
+				return acc;
+			}
+		});
+		res.json(accList);
+	});
+
+	// }
+});
+
 router.get('/getArtistArtwork/:id', (req, res) => {
 	let id = req.params.id;
 	let artworkList = [];

@@ -120,16 +120,26 @@ router.post('/editAccount', function(req, res) {
 	);
 });
 router.put('/editProfile/:id', function (req, res) {
-	console.log(req.body.data,'aaa')
-		const request = func.removeUndefinedProps((req.body.data));
-		let id = req.params.id;
-		Accounts.findByIdAndUpdate({ _id: id }, request, { useFindAndModify: false }, (err, place) => {
-			if (err) return res.send(err);
+	
+	console.log(res.data,'request')
+		let filteredRequest = removeUndefinedProps(req.body.data);
+	
+		
+
+		Accounts.findByIdAndUpdate({ _id: filteredRequest._id}, filteredRequest,
+			 { useFindAndModify: true },
+			 function (err, place)  {
+				 console.log(err,place,'eeeee')
+			if (err) {
+			return res.send(err)
+		}
+			else{
 			const account = Accounts.find({}, (err, docs) => {
 				setTimeout(() => {
 					res.json(docs);
 				}, 1200);
 			});
+		}
 		});
 	});
 
@@ -227,7 +237,8 @@ router.post('/loginEmail', async function(req, res) {
 router.get('/getArtists', (req, res) => {
 	const artist = Accounts.find({},{useFindAndModify:false}, function(err, docs) {
 		let accList = docs.filter((acc) => {
-			if (acc.accessType === 'Artist') {
+	
+			if (acc.accessType === 'Artist' && acc.acc_Status === 'Active') {
 				artists.insert(acc);
 				db.saveDatabase(acc);
 				return acc;
@@ -262,7 +273,7 @@ router.get('/getSingleArtists/:id', (req, res) => {
 
 router.post('/loginFB', async function(req, res) {
 	let request = req.body.data;
-	console.log(request,'dfsgsdfgs')
+	
 	try {
 		const user = await Accounts.findOne({ accEmailAddress: request.accEmailAddress });
 		
