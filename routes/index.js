@@ -7,7 +7,7 @@ const accountsRoute = require('./accountsRoute'),
 	mylistRoute = require('./mylistsRoute'),
 	notifRoute = require('./notifRoute'),
 	feedbackRoute = require('./feedbackRoute'),
-	userfollowRoute = require('.userfollowRoute'),
+	userfollowRoute = require('./userfollowRoute'),
 express = require('express'), 
 router = express.Router();
 router.use('/', accountsRoute);
