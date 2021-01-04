@@ -323,7 +323,17 @@ router.get('/getAllArtworks', (req, res) => {
 	// }
 
 
+	
 
+
+
+})
+
+router.get ('./getSaleArts',(req,res)=>{
+	const arts = Artwork.find({},function(err,docs){
+		res.json(docs)
+
+	})
 })
 
 module.exports = router;

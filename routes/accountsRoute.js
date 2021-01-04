@@ -77,7 +77,7 @@ router.post('/addAccounts', async (req, res) => {
 				})
 				.catch((err) => {
 					res.json({ status: false });
-					console.log(err,'errorSignUp');
+					
 				});
 		}
 	});
@@ -121,7 +121,6 @@ router.post('/editAccount', function(req, res) {
 });
 router.put('/editProfile/:id', function (req, res) {
 	
-	console.log(res.data,'request')
 		let filteredRequest = removeUndefinedProps(req.body.data);
 	
 		
@@ -129,7 +128,7 @@ router.put('/editProfile/:id', function (req, res) {
 		Accounts.findByIdAndUpdate({ _id: filteredRequest._id}, filteredRequest,
 			 { useFindAndModify: true },
 			 function (err, place)  {
-				 console.log(err,place,'eeeee')
+			
 			if (err) {
 			return res.send(err)
 		}

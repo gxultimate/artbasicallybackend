@@ -1,3 +1,4 @@
+const router = require('./accountsRoute');
 const accountsRoute = require('./accountsRoute'),
 	artshareRoute = require('./artshareRoute'),
 	artworkRoute = require('./artworkRoute'),
@@ -8,8 +9,8 @@ const accountsRoute = require('./accountsRoute'),
 	notifRoute = require('./notifRoute'),
 	feedbackRoute = require('./feedbackRoute'),
 	userfollowRoute = require('./userfollowRoute'),
-express = require('express'), 
-router = express.Router();
+	printOptionRoute = require('./printOptionsRoute');
+(express = require('express')), (router = express.Router());
 router.use('/', accountsRoute);
 router.use('/', artshareRoute);
 router.use('/', artworkRoute);
@@ -19,5 +20,6 @@ router.use('/', transactionRoute);
 router.use('/', mylistRoute);
 router.use('/', notifRoute);
 router.use('/', feedbackRoute);
+router.use('/', printOptionRoute);
 router.use('/', userfollowRoute);
 module.exports = router;

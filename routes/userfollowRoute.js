@@ -49,7 +49,7 @@ router.delete('/deleteFollow/:id/:followid',function (req, res)  {
 	
     let id = req.params.id;
     let follow_ID = req.params.followid
-	console.log(req.params,'sadsad')
+	
 
 	UserFollow.deleteOne({ _id: id }, (err, place) => {
 		if (err) {
@@ -58,7 +58,7 @@ router.delete('/deleteFollow/:id/:followid',function (req, res)  {
 
          
 		const follow = UserFollow.find({ followID: follow_ID }, (err, docs) => {
-            console.log(docs,'docs')
+           
 			setTimeout(() => {
 				res.json(docs);
 			}, 1200);

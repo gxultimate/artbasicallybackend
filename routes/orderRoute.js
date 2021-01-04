@@ -16,7 +16,7 @@ router.post('/getOrders', function(req, res) {
 router.get('/getOrder/:id', function(req, res) {
 	const id = req.params.id
 	const order = Order.find({ accID: id }, function(err, docs) {
-		console.log(docs.orderItems,"sds")
+		
 		res.json(docs);
 	});
 });
