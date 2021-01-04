@@ -9,7 +9,7 @@ const accountsRoute = require('./accountsRoute'),
 	notifRoute = require('./notifRoute'),
 	feedbackRoute = require('./feedbackRoute'),
 	userfollowRoute = require('./userfollowRoute'),
-	printOptionRoute = require('./printOptionsRoute');
+	printOptionRoute = require('./printOptionsRoute'),
 (express = require('express')), (router = express.Router());
 router.use('/', accountsRoute);
 router.use('/', artshareRoute);
