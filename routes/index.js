@@ -1,4 +1,3 @@
-const router = require('./accountsRoute');
 const accountsRoute = require('./accountsRoute'),
 	artshareRoute = require('./artshareRoute'),
 	artworkRoute = require('./artworkRoute'),
@@ -10,7 +9,8 @@ const accountsRoute = require('./accountsRoute'),
 	feedbackRoute = require('./feedbackRoute'),
 	userfollowRoute = require('./userfollowRoute'),
 	printOptionRoute = require('./printOptionsRoute'),
-(express = require('express')), (router = express.Router());
+	express = require('express'),
+	router = express.Router();
 router.use('/', accountsRoute);
 router.use('/', artshareRoute);
 router.use('/', artworkRoute);
