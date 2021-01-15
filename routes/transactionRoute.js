@@ -78,7 +78,8 @@ router.post('/addToCart', function(req, res) {
 			artworkMaterial: request.artworkMaterial,
 			artworkFramingOptions: request.artworkFramingOptions,
 			artworkQuantity: request.artworkQuantity,
-			artworkPrice: request.artworkPrice
+			artworkPrice: request.artworkPrice,
+			artDPI: request.artDPI
 		});
 		cart
 			.save()

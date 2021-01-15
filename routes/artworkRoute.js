@@ -44,8 +44,12 @@ router.post('/addArtwork', (req, res) => {
 		artworkDateCreated: request.artworkDateCreated,
 		artDimension: request.artDimension,
 		artType: request.artType,
+		artHeight: request.artHeight,
+		artWidth: request.artWidth,
+		artDPI: request.artDPI,
+		artFormat: request.artFormat,
 		artCategory: request.artCategory,
-		dateAdded: moment().format('MM/DD/YYYY'),
+		dateAdded: moment().format('MMM/DD/YYYY'),
 		artworkImg: request.artworkImg,
 		artworkStatus: request.artworkStatus,
 	});
@@ -329,11 +333,15 @@ router.get('/getAllArtworks', (req, res) => {
 
 })
 
-router.get ('./getSaleArts',(req,res)=>{
+router.get ('/getSaleArts',(req,res)=>{
+	
 	const arts = Artwork.find({},function(err,docs){
 		res.json(docs)
 
 	})
 })
+
+
+
 
 module.exports = router;

@@ -53,6 +53,18 @@ const artworksSchema = mongoose.Schema({
     artworkImg :{
         type: String
     },
+    artHeight:{
+        type:String
+    },
+    artWidth:{
+        type:String
+    },
+    artFormat:{
+        type:String
+    },
+    artDPI:{
+        type:String
+    },
     dateAdded: {
         type : String
     },

@@ -39,6 +39,9 @@ const cartSchema = mongoose.Schema({
 	},
 	artworkPrice: {
 		type: String
+	},
+	artDPI: {
+		type: String
 	}
 });
 
